@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percobaan aplikasi chat web</title>
+    <style>
+        body{
+            background-color: rgb(46, 81, 146);
+        }
+        div{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        p{
+            color: antiquewhite;
+        }
+        button{
+            background-color: aquamarine;
+        }
+        button, input, p {
+            margin: 7px;
+            width: 50%;
+            max-width: 300px;
+        }
+        @media (max-width: 600px) {
+            button, input, p {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p id="show_pesan"></p>
+        <input type="text" id="pesan" value="">
+        <button onclick="sendDataToAnotherBrowser()">kirim</button>
+    </div>
+    <script>
+        const sendch = new BroadcastChannel("send_ch")
+        
+        function sendDataToAnotherBrowser(){
+            const isPesan = document.getElementById("pesan")
+            sendch.postMessage(isPesan.value)
+
+            document.getElementById("show_pesan").textContent +=isPesan.value +"\n (tekirim)> \n"
+            saveMessage(isPesan.value)
+        }
+
+        sendch.onmessage = (event) => {
+            document.getElementById("show_pesan").textContent += event.data +"\n <(diterima) \n"
+            saveMessage(event.data)
+        }
+
+        function saveMessage(message) {
+            localStorage.setItem("lastMessage", message);
+        }
+
+        function loadMessage() {
+            const message = localStorage.getItem("lastMessage");
+            if (message) {
+                document.getElementById("show_pesan").textContent = message;
+            }
+        }
+
+        loadMessage();
+    </script>
+</body>
+</html>
